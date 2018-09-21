@@ -1,9 +1,19 @@
 import Vue from "vue";
 
 export default {
-  ADD_BOARD(state, board) {
+  setBoard(state, board) {
+    state.board = board;
+  },
+  setBoardList(state, boards) {
+    state.boards = boards;
+  },
+  addBoard(state, board) {
+    console.log(board);
     state.boards.push(board);
   },
+
+
+
   ADD_TASK(state, task) {
     state.tasks.push(task);
   },

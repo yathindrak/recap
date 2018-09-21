@@ -3,6 +3,7 @@
 export default {
   boards: [],
   board: [],
+
   columns: [],
   cards: []
 };

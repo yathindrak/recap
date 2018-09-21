@@ -23,10 +23,23 @@ const httpLink = new HttpLink({
   uri: 'http://localhost:4000/graphql'
 });
 
+
+const defaultOptions = {
+  watchQuery: {
+    fetchPolicy: 'network-only',
+    errorPolicy: 'ignore',
+  },
+  query: {
+    fetchPolicy: 'network-only',
+    errorPolicy: 'all',
+  },
+};
+
 // Create the apollo client
 export const apolloClient = new ApolloClient({
   link: httpLink,
   cache: new InMemoryCache(),
+  defaultOptions: defaultOptions,
   connectToDevTools: true
 });
 

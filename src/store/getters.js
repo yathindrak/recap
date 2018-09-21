@@ -1,6 +1,8 @@
 export default {
+  board: state => state.board,
   boards: state => state.boards,
-  board: state => state.current,
+
+
   cards: state => state.cards,
 
   getListsByBoard: state => boardId =>

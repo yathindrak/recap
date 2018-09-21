@@ -30,6 +30,7 @@ export default {
   }),
   methods: {
     gotoBoards() {
+      // this.$store.dispatch('fetchBoardList');
       this.$router.push("/");
     }
   }

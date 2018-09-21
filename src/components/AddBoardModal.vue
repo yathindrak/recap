@@ -78,12 +78,14 @@ import gql from "graphql-tag";
         // this.newTag = newTag
       })
     },
-    addBoard() {
-      console.log(this.board_name + ' : ' + this.board_descr);
-      this.createBoard(this.board_name, this.board_descr);
+      async addBoard() {
+        await this.$store.dispatch('addBoard', [this.board_name, this.board_descr]);
+      // this.createBoard(this.board_name, this.board_descr);
       this.board_name ='';
       this.board_descr = '';
       this.popupActivo = false;
+      // for now reload the page
+      // location.reload()
     },
   },
 };

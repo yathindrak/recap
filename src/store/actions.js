@@ -1,12 +1,9 @@
-// import config from '../config/api';
-// import axios from "axios";
 import gql from 'graphql-tag';
 import {apolloClient} from '../main'
 
 export default {
 
   async fetchBoard({ commit }, id) {
-    // console.log('FETCH BOARD : '+ JSON.stringify(this));
     const response = await apolloClient.query({
       query: gql`
         query getBoard($id: Int!) {
@@ -26,7 +23,7 @@ export default {
           }
       }
       `,
-      variables: { id: id },
+      variables: { id: parseInt(id) },
       update: function(data) {
         // this is not get called
         console.log(data);
@@ -34,12 +31,55 @@ export default {
       }
     });
 
-    console.log(response.data.getBoard)
-
-    // commit('setBook', response.data.book);
+    commit('setBoard', response.data.getBoard);
   },
 
+  async fetchBoardList({ commit }) {
+    const response = await apolloClient.query({
+      query: gql`
+        query getBoards {
+          getBoards {
+            id
+            name
+            description
+          }
+        }
+      `,
+    });
 
+    commit('setBoardList', response.data.getBoards);
+  },
+
+  async addBoard({ commit, dispatch }, data) {
+    const response = await apolloClient.mutate({
+      mutation: gql`
+        mutation ($name: String!, $description: String!) {
+        createBoard(name: $name, description: $description) {
+          ok
+          board{
+            id
+            name
+            description
+          }
+        }
+      }
+      `,
+      variables: {
+        name: data[0],
+        description: data[1],
+      },
+      update: function(data) {
+        // console.log(JSON.stringify(data));
+        // dispatch('fetchBoardList');
+      },
+    });
+
+    // console.log(response.data.createBoard.board);
+    commit('addBoard', response.data.createBoard.board);
+    // console.log(response.data.createBoard);
+
+    // commit('setBoardList', response.data.getBoards);
+  },
 
 
   // setCurrentBoard({ commit }, board) {
