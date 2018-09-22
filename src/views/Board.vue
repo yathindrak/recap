@@ -3,7 +3,7 @@
     <vs-row class="row" v-if="board.columns !== undefined">
       <vs-col class="col" v-for="column in board.columns" :key="column.id" vs-type="flex" vs-justify="center"
               vs-align="center" vs-lg="3" vs-sm="6" vs-xs="12">
-        <column :name="column.name" :description="column.description">
+        <column :columnId="column.id" :name="column.name" :description="column.description">
           <card v-for="card in column.cards" :key="card.id" :name="card.name" :description="card.description" />
           <!--<card name="123" description="12342rdsfz" />-->
           <!--<card name="123" description="12342rdsfz" />-->
@@ -61,12 +61,9 @@ export default {
     };
   },
   async mounted() {
-    let x = await this.$route.query.board_id;
-    // Get board id as query params
-    // this.$apollo.queries.getBoard.refetch();
-    console.log('ash'+ this.$route.query.board_id);
+    let boardId = await this.$route.query.board_id;
 
-    this.$store.dispatch('fetchBoard', x);
+    this.$store.dispatch('fetchBoard', boardId);
 
   }
 };

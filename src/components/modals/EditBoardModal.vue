@@ -25,24 +25,25 @@
     data() {
       return {
         popupActivo: false,
+        board_id: "",
         board_name: "",
         board_descr: ""
       };
     },
     mounted() {
-      console.log(JSON.stringify(this.board));
-
       if (this.board) {
+        this.board_id = this.board.id;
         this.board_name = this.board.name;
         this.board_descr = this.board.description;
       }
     },
     methods: {
       async editBoard() {
+        await this.$store.dispatch('updateBoard', [parseInt(this.board_id), this.board_name, this.board_descr]);
         // await this.$store.dispatch('addBoard', [this.board_name, this.board_descr]);
         // this.createBoard(this.board_name, this.board_descr);
-        this.board_name ='';
-        this.board_descr = '';
+        // this.board_name ='';
+        // this.board_descr = '';
         this.popupActivo = false;
         // for now reload the page
         // location.reload()

@@ -12,7 +12,8 @@
             <vs-row vs-justify="flex-end">
                 <vs-button vs-type="gradient" vs-color="primary" vs-icon="thumb_up"></vs-button>
                 <vs-button vs-type="flat" vs-color="primary" vs-icon="edit" @click.prevent="confEdit"></vs-button>
-                <vs-button vs-type="flat" vs-color="primary" vs-icon="delete" :type="type" @click.prevent="confDelete"></vs-button>
+                <vs-button vs-type="flat" vs-color="primary" vs-icon="delete" :type="type" @click.prevent="confDelete">
+                </vs-button>
             </vs-row>
         </div>
         <EditCardModal v-bind:name="this.name" v-bind:description="this.description" :bus="bus"></EditCardModal>

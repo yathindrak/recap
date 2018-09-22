@@ -16,7 +16,7 @@
                         </vs-dropdown-item>
                     </vs-dropdown-menu>
                 </vs-dropdown><!--End of column drop down -->
-              <AddColumnModal></AddColumnModal>
+              <AddCardModal :columnId="columnId"></AddCardModal>
             </vs-row>
 
 
@@ -35,12 +35,13 @@
 </template>
 
 <script>
-import AddColumnModal from "./AddCardModal";
+import AddCardModal from "./AddCardModal";
 
 export default {
   name: "Column",
-  components: { AddColumnModal },
+  components: { AddCardModal },
   props: {
+    columnId: '',
     name: String,
     description: String
   },

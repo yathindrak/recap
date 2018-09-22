@@ -13,7 +13,6 @@ import Vuesax from "vuesax";
 import "vuesax/dist/vuesax.css";
 import "material-icons/iconfont/material-icons.css";
 import store from "@/store/store";
-
 Vue.config.productionTip = false;
 
 Vue.use(Vuesax);

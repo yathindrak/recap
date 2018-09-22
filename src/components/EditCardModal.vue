@@ -7,9 +7,16 @@
                 :title="this.name" :active.sync="popupActivo5">
 
             <!--Description-->
-            <h2>Description</h2><br/>
+          <div v-if="!editable">
+            <h2 @click="enableEditing">{{heading}}</h2><br/>
+          </div>
+          <div v-if="editable">
+            <vs-input :placeholder="heading" v-model="heading"/><br>
+          </div>
 
-            <p>{{description}}
+
+
+            <p v-if="!editable">{{description}}
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
                 incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
                 exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
@@ -17,6 +24,12 @@
                 sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                 <br>
             </p>
+          <!--<b-form-textarea id="textarea1"-->
+                           <!--placeholder="Enter something"-->
+                           <!--:rows="3"-->
+                           <!--:max-rows="6">-->
+          <!--</b-form-textarea>-->
+            <!--<vs-input v-if="editable" :placeholder="description" v-model="description"/><br>-->
 
             <div>
                 <vs-list>
@@ -49,13 +62,36 @@ export default {
   data() {
     return {
       colorx: "#4a5153",
-      popupActivo5: false
+      popupActivo5: false,
+      heading: "Description",
+      editable: false
     };
   },
   mounted() {
     this.bus.$on("confEdit", () => {
+      this.editable = false;
       this.popupActivo5 = true;
     });
+  },
+  methods: {
+    openModal() {
+      this.popupActivo5=true
+    },
+    enableEditing: function(){
+      this.editable = true;
+      // this.tempValue = this.value;
+      // this.editing = true;
+    },
+    disableEditing: function(){
+      this.editable = false;
+      // this.tempValue = null;
+      // this.editing = false;
+    },
+    saveEdit: function(){
+      // However we want to save it to the database
+      // this.value = this.tempValue;
+      this.disableEditing();
+    },
   }
 };
 </script>

@@ -70,17 +70,164 @@ export default {
       },
       update: function(data) {
         // console.log(JSON.stringify(data));
-        // dispatch('fetchBoardList');
+        dispatch('fetchBoardList');
       },
     });
 
     // console.log(response.data.createBoard.board);
-    commit('addBoard', response.data.createBoard.board);
+    // commit('addBoard', response.data.createBoard.board);
     // console.log(response.data.createBoard);
 
     // commit('setBoardList', response.data.getBoards);
   },
 
+  async addColumn({ commit, dispatch }, data) {
+    const response = await apolloClient.mutate({
+      mutation: gql`
+        mutation ($name: String!, $description: String!) {
+        createColumn(name: $name, description: $description) {
+          ok
+          column{
+            id
+            name
+            description
+          }
+        }
+      }
+      `,
+      variables: {
+        board_id: data[0],
+        name: data[1],
+        description: data[2],
+      },
+      update: function(data) {
+        // console.log(JSON.stringify(data));
+        dispatch('fetchBoardList');
+      },
+    });
+
+    // console.log(response.data.createBoard.board);
+    // commit('addBoard', response.data.createBoard.board);
+    // console.log(response.data.createBoard);
+
+    // commit('setBoardList', response.data.getBoards);
+  },
+
+  async addCard({ commit, dispatch }, data) {
+    const response = await apolloClient.mutate({
+      mutation: gql`
+        mutation ($columnId: Int!, $name: String!, $description: String!, $order_num: Int!) {
+        createCard(columnId: $columnId, name: $name, description: $description, order_num: $order_num) {
+          ok
+          card{
+            id
+            name
+            description
+          }
+        }
+      }
+      `,
+      variables: {
+        columnId: data[0],
+        name: data[1],
+        description: data[2],
+        order_num: data[3]
+      },
+      update: function(res_data) {
+        const boardId = data[4];
+        console.log(boardId)
+        dispatch('fetchBoard', boardId);
+      },
+    });
+
+    // console.log(response.data.createBoard.board);
+    // commit('addBoard', response.data.createBoard.board);
+    // console.log(response.data.createBoard);
+
+    // commit('setBoardList', response.data.getBoards);
+  },
+
+  async updateBoard({ commit, dispatch }, data) {
+    const response = await apolloClient.mutate({
+      mutation: gql`
+        mutation ($id: Int!, $name: String!, $description: String!){
+          updateBoard(id:$id, name: $name, description: $description){
+            ok
+            errors{
+              message
+            }
+          }
+        }
+      `,
+      variables: {
+        id: data[0],
+        name: data[1],
+        description: data[2],
+      },
+      update: function(data) {
+        // console.log(JSON.stringify(data));
+        dispatch('fetchBoardList');
+      },
+    });
+
+    // commit('addBoard', response.data.createBoard.board);
+
+    // commit('setBoardList', response.data.getBoards);
+  },
+
+  async updateColumn({ commit, dispatch }, data) {
+    const response = await apolloClient.mutate({
+      mutation: gql`
+        mutation ($id: Int!, $name: String!, $description: String!){
+          updateColumn(id:$id, name: $name, description: $description){
+            ok
+            errors{
+              message
+            }
+          }
+        }
+      `,
+      variables: {
+        id: data[0],
+        name: data[1],
+        description: data[2],
+      },
+      update: function(data) {
+        // dispatch('fetchBoardList');
+      },
+    });
+
+    // commit('addBoard', response.data.createBoard.board);
+
+    // commit('setBoardList', response.data.getBoards);
+  },
+
+  async updateCard({ commit, dispatch }, data) {
+    const response = await apolloClient.mutate({
+      mutation: gql`
+        mutation ($id: Int!, $name: String!, $description: String!){
+          updateColumn(id:$id, name: $name, description: $description){
+            ok
+            errors{
+              message
+            }
+          }
+        }
+      `,
+      variables: {
+        id: data[0],
+        name: data[1],
+        description: data[2],
+      },
+      update: function(data) {
+        // dispatch('fetchBoardList');
+      },
+    });
+
+    // commit('addBoard', response.data.createBoard.board);
+
+    // commit('setBoardList', response.data.getBoards);
+  },
 
   // setCurrentBoard({ commit }, board) {
   //     commit('SET_BOARD', board)
