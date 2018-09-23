@@ -206,8 +206,12 @@ export default {
     const response = await apolloClient.mutate({
       mutation: gql`
         mutation ($id: Int!, $name: String!, $description: String!){
-          updateColumn(id:$id, name: $name, description: $description){
+          updateCard(id:$id, name: $name, description: $description){
             ok
+            card{
+              name
+              description
+            }
             errors{
               message
             }
@@ -219,8 +223,9 @@ export default {
         name: data[1],
         description: data[2],
       },
-      update: function(data) {
-        // dispatch('fetchBoardList');
+      update: function(res_data) {
+        const boardId = data[3];
+        dispatch('fetchBoard', boardId);
       },
     });
 
@@ -228,6 +233,36 @@ export default {
 
     // commit('setBoardList', response.data.getBoards);
   },
+
+  async deleteCard({ commit, dispatch }, data) {
+    const response = await apolloClient.mutate({
+      mutation: gql`
+        mutation ($id: Int!){
+          deleteCard(id:$id){
+            ok
+            errors{
+              message
+            }
+          }
+        }
+      `,
+      variables: {
+        id: data[0],
+      },
+      update: function(res_data) {
+        const boardId = data[1];
+        dispatch('fetchBoard', boardId);
+      },
+    });
+
+    // commit('addBoard', response.data.createBoard.board);
+
+    // commit('setBoardList', response.data.getBoards);
+  },
+
+
+
+
 
   // setCurrentBoard({ commit }, board) {
   //     commit('SET_BOARD', board)

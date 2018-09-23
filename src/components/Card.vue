@@ -16,13 +16,13 @@
                 </vs-button>
             </vs-row>
         </div>
-        <EditCardModal v-bind:name="this.name" v-bind:description="this.description" :bus="bus"></EditCardModal>
+        <EditCardModal v-bind:cardId="this.cardId" v-bind:name="this.name" v-bind:description="this.description" :bus="bus"></EditCardModal>
         <DeleteModal :bus="bus" ref="form"></DeleteModal>
     </vs-card>
 </template>
 
 <script>
-import DeleteModal from "@/components/DeleteModal";
+import DeleteModal from "@/components/modals/DeleteModal";
 import EditCardModal from "@/components/EditCardModal";
 
 import Vue from "vue";
@@ -33,10 +33,13 @@ export default {
   data: function() {
     return {
       type: "card",
+      boardId: this.$route.query.board_id,
       bus: new Vue()
     };
   },
   props: {
+    cardId: '',
+    columnId: '',
     name: String,
     description: String
   },
@@ -45,7 +48,13 @@ export default {
       this.bus.$emit("confEdit");
     },
     confDelete() {
-      this.bus.$emit("confDelete");
+      this.bus.$emit("confDelete",
+        {
+          type: 'delete-card',
+          id: this.cardId,
+          boardId: this.boardId
+        }
+        );
     }
   }
 };

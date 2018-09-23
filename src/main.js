@@ -13,6 +13,12 @@ import Vuesax from "vuesax";
 import "vuesax/dist/vuesax.css";
 import "material-icons/iconfont/material-icons.css";
 import store from "@/store/store";
+
+// import BootstrapVue from 'bootstrap-vue';
+// import 'bootstrap/dist/css/bootstrap.css'
+// import 'bootstrap-vue/dist/bootstrap-vue.css'
+//
+// Vue.use(BootstrapVue);
 Vue.config.productionTip = false;
 
 Vue.use(Vuesax);

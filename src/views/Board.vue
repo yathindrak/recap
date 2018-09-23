@@ -4,7 +4,7 @@
       <vs-col class="col" v-for="column in board.columns" :key="column.id" vs-type="flex" vs-justify="center"
               vs-align="center" vs-lg="3" vs-sm="6" vs-xs="12">
         <column :columnId="column.id" :name="column.name" :description="column.description">
-          <card v-for="card in column.cards" :key="card.id" :name="card.name" :description="card.description" />
+          <card v-for="card in column.cards" :key="card.id" :cardId="card.id" :name="card.name" :description="card.description" />
           <!--<card name="123" description="12342rdsfz" />-->
           <!--<card name="123" description="12342rdsfz" />-->
           <!--<card name="123" description="12342rdsfz" />-->
