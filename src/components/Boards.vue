@@ -28,6 +28,7 @@
 <script>
 import { mapState } from 'vuex';
 import BoardTile from "./BoardTile";
+import gql from "graphql-tag";
 
 export default {
   name: "Boards",
@@ -40,8 +41,45 @@ export default {
   computed: {
     ...mapState(['boards']),
   },
+  apollo: {
+    // Subscriptions
+    $subscribe: {
+      // When a tag is added
+      tagAdded: {
+        query: gql`subscription {
+          boardAdded{
+            id
+          }
+        }`,
+        // Result hook
+        result() {
+          console.log('SOMEONE ADDED A BOARD');
+          this.$store.dispatch('fetchBoardList');
+        },
+      },
+    },
+  },
   async mounted() {
     await this.$store.dispatch('fetchBoardList');
+    // await this.$store.dispatch('subscribeAddBoard');
+
+    const token = localStorage.getItem('token') || null;
+    const refreshToken = localStorage.getItem('refreshToken')  || null;
+    let userIdentity = localStorage.getItem('useridentity')  || null;
+
+    if (token === null || refreshToken === null) {
+
+      if (userIdentity === null) {
+        const randomBuffer = new Uint32Array(1);
+        window.crypto.getRandomValues(randomBuffer);
+        userIdentity = randomBuffer[0];
+
+        await this.$store.dispatch('logUser', [userIdentity.toString()]);
+        localStorage.setItem('useridentity', userIdentity);
+      } else {
+        this.$store.dispatch('logUser', [userIdentity.toString()]);
+      }
+    }
   }
 };
 </script>

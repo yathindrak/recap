@@ -34,6 +34,34 @@ export default {
     commit('setBoard', response.data.getBoard);
   },
 
+  async logUser({ commit, dispatch }, data) {
+    const response = await apolloClient.mutate({
+      mutation: gql`
+        mutation ($useridentity: String!) {
+        login(useridentity: $useridentity) {
+          ok
+          token
+          refreshToken
+          errors{
+              path
+              message
+            }
+        }
+      }
+      `,
+      variables: {
+        useridentity: data[0],
+      },
+      update: function(data) {
+        // console.log(JSON.stringify(data.data));
+        // dispatch('fetchBoardList');
+      },
+    });
+    console.log(JSON.stringify(response.data.login));
+
+    localStorage.setItem('token', response.data.login.token);
+    localStorage.setItem('refreshToken', response.data.login.refreshToken);
+  },
   async fetchBoardList({ commit }) {
     const response = await apolloClient.query({
       query: gql`
@@ -259,9 +287,6 @@ export default {
 
     // commit('setBoardList', response.data.getBoards);
   },
-
-
-
 
 
   // setCurrentBoard({ commit }, board) {
