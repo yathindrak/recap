@@ -2,7 +2,7 @@
 
 ## Overview
 
-Open Source Kanban app for spring retrospective
+Open Source Kanban app for sprint retrospective -Anonymous(Without Login)
 
 ## Build Setup
 
