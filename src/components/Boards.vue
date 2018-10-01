@@ -6,19 +6,19 @@
                     <vs-row class="row">
                         <vs-col class="col" :key="board.id" v-for="board in boards" vs-type="flex"
                                 vs-justify="center" vs-align="center"  vs-lg="3" vs-sm="4" vs-xs="6">
-                            <BoardTile :id="board.id" :name="board.name" :description="board.description"></BoardTile>
+                            <BoardTile :id="board.id" :name="board.name" :description="board.description" :isLiked="board.isLiked"></BoardTile>
                         </vs-col>
                     </vs-row>
                 </div><!--End of displaying all boards-->
             </vs-tab>
-            <vs-tab vs-label="Recent Boards">
-                <div>
-
-                </div>
-            </vs-tab>
             <vs-tab vs-label="Starred Boards">
                 <div>
-
+                  <vs-row class="row">
+                    <vs-col class="col" :key="board.id" v-for="board in boards.filter(item => item.isLiked == true )" vs-type="flex"
+                            vs-justify="center" vs-align="center"  vs-lg="3" vs-sm="4" vs-xs="6">
+                      <BoardTile :id="board.id" :name="board.name" :description="board.description" :isLiked="board.isLiked"  v-if="board.isLiked"></BoardTile>
+                    </vs-col>
+                  </vs-row>
                 </div>
             </vs-tab>
         </vs-tabs>
@@ -28,7 +28,7 @@
 <script>
 import { mapState } from 'vuex';
 import BoardTile from "./BoardTile";
-import gql from "graphql-tag";
+import boardsSub from '../gql-subscriptions/boards';
 
 export default {
   name: "Boards",
@@ -41,27 +41,9 @@ export default {
   computed: {
     ...mapState(['boards']),
   },
-  apollo: {
-    // Subscriptions
-    $subscribe: {
-      // When a tag is added
-      tagAdded: {
-        query: gql`subscription {
-          boardAdded{
-            id
-          }
-        }`,
-        // Result hook
-        result() {
-          console.log('SOMEONE ADDED A BOARD');
-          this.$store.dispatch('fetchBoardList');
-        },
-      },
-    },
-  },
+  apollo: boardsSub,
   async mounted() {
     await this.$store.dispatch('fetchBoardList');
-    // await this.$store.dispatch('subscribeAddBoard');
 
     const token = localStorage.getItem('token') || null;
     const refreshToken = localStorage.getItem('refreshToken')  || null;
@@ -70,6 +52,7 @@ export default {
     if (token === null || refreshToken === null) {
 
       if (userIdentity === null) {
+        // create a random number using crypto API
         const randomBuffer = new Uint32Array(1);
         window.crypto.getRandomValues(randomBuffer);
         userIdentity = randomBuffer[0];

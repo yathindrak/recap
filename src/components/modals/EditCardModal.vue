@@ -18,39 +18,29 @@
         <br>
       </p>
 
-      <textarea v-if="editable"
-                id="descr"
-                :value="description"
-                name="subject"
-                placeholder="Write something.."
-                style="height:200px">
-      </textarea>
+      <vs-textarea id="descr" v-if="editable" label="Description" v-model="description">
+      </vs-textarea>
 
-      <!--<vs-input v-if="editable" :placeholder="description" v-model="description"/><br>-->
       <div id="edit-save" v-if="editable">
         <vs-button vs-color="success" vs-type="flat" vs-icon="comment" @click="saveEdit()">Save Changes</vs-button>
-        <vs-button vs-color="success" vs-type="flat" vs-icon="cancel" @click="saveEdit()">Dismiss</vs-button>
+        <vs-button vs-color="success" vs-type="flat" vs-icon="cancel" @click="disableEditing()">Dismiss</vs-button>
       </div>
+
       <div v-bind:class="{ commentsSection: editable }" >
         <vs-list>
           <vs-list-header title="Comments" color="primary"></vs-list-header>
-          <vs-list-item title="Anonymous" subtitle="Some comment">
-            <template slot="avatar">
-              <vs-avatar />
-            </template>
-          </vs-list-item>
-          <vs-list-item title="Anonymous" subtitle="Some other comment">
+          <h3 id="no-comments" v-if="!comments">No Comments To Display</h3>
+          <vs-list-item v-if="comments" title="Anonymous" v-for="(comment, index) in comments" :key="index" :subtitle="comment">
             <template slot="avatar">
               <vs-avatar vs-text="Vuesax"/>
             </template>
           </vs-list-item>
         </vs-list>
         <vs-row>
-          <vs-input vs-placeholder="Add Comment"/>
-          <vs-button class="comment-submit-btn" vs-color="success" vs-type="flat" vs-icon="comment">Comment</vs-button>
+          <vs-input v-model="comment" vs-placeholder="Add Comment"/>
+          <vs-button class="comment-submit-btn" @click="addComment()" vs-color="success" vs-type="flat" vs-icon="comment">Comment</vs-button>
         </vs-row>
       </div>
-
     </vs-popup>
   </div>
 </template>
@@ -58,7 +48,7 @@
 <script>
   export default {
     name: "EditCardModal",
-    props: ["cardId", "name", "description", "bus", "type"],
+    props: ["cardId", "name", "description", "bus", "type", "comments"],
     data() {
       return {
         title: '',
@@ -66,7 +56,9 @@
         colorx: "#4a5153",
         popupActivo5: false,
         heading: "Description",
-        editable: false
+        comment: '',
+        editable: false,
+        textarea: ''
       };
     },
     mounted() {
@@ -79,6 +71,9 @@
     methods: {
       openModal() {
         this.popupActivo5=true
+      },
+      closeModal() {
+        this.popupActivo5=false;
       },
       changeTitle() {
 
@@ -96,11 +91,17 @@
       saveEdit: function(){
         // However we want to save it to the database
         // this.value = this.tempValue;
+        let userIdentity = localStorage.getItem('useridentity');
         const descr = document.getElementById('descr').value;
-        console.log(descr);
-        this.$store.dispatch('updateCard', [parseInt(this.cardId), this.title, descr, this.boardId]);
+        this.$store.dispatch('updateCard', [parseInt(this.cardId), this.title, descr, parseInt(this.boardId), userIdentity]);
         this.disableEditing();
       },
+      async addComment() {
+        let userIdentity = localStorage.getItem('useridentity');
+        await this.$store.dispatch('addComment', [this.comment, parseInt(this.cardId), userIdentity, parseInt(this.boardId)]);
+        this.closeModal();
+        // location.reload();
+      }
     }
   };
 </script>
@@ -134,5 +135,9 @@
 
   .commentsSection {
     margin-top: 60px;
+  }
+
+  #no-comments {
+    color: #5a504e;
   }
 </style>

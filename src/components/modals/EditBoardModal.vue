@@ -15,6 +15,8 @@
 
 <script>
 
+  import gql from "graphql-tag";
+
   export default {
     name: "EditBoardModal",
     props: {
@@ -30,6 +32,23 @@
         board_descr: ""
       };
     },
+    apollo: {
+      // Subscriptions
+      $subscribe: {
+        boardEdited: {
+          query: gql`subscription {
+          boardEdited{
+            id
+          }
+        }`,
+          // Result hook
+          result() {
+            console.log('SOMEONE EDITED A BOARD');
+            this.$store.dispatch('fetchBoardList');
+          },
+        },
+        },
+      },
     mounted() {
       if (this.board) {
         this.board_id = this.board.id;

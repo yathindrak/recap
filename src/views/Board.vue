@@ -4,13 +4,8 @@
       <vs-col class="col" v-for="column in board.columns" :key="column.id" vs-type="flex" vs-justify="center"
               vs-align="center" vs-lg="3" vs-sm="6" vs-xs="12">
         <column :columnId="column.id" :name="column.name" :description="column.description">
-          <card v-for="card in column.cards" :key="card.id" :cardId="card.id" :name="card.name" :description="card.description" />
-          <!--<card name="123" description="12342rdsfz" />-->
-          <!--<card name="123" description="12342rdsfz" />-->
-          <!--<card name="123" description="12342rdsfz" />-->
-          <!--<card name="123" description="12342rdsfz" />-->
-          <!--<card name="123" description="12342rdsfz" />-->
-          <!--<card name="123" description="12342rdsfz" />-->
+          <card v-for="card in column.cards" :key="card.id" :isLiked="card.isLiked" :comments="card.comments"
+                :cardId="card.id" :name="card.name" :description="card.description" />
         </column>
       </vs-col>
     </vs-row>
@@ -43,6 +38,7 @@
 import Card from "../components/Card";
 import Column from "../components/Column";
 import { mapState } from 'vuex';
+import boardSub from '../gql-subscriptions/board';
 
 export default {
   components: { Column, Card },
@@ -58,14 +54,18 @@ export default {
       getBoard: '',
       loading: 0,
       columns:[],
+      userIdentity: '',
     };
   },
   async mounted() {
-    let boardId = await this.$route.query.board_id;
+    this.boardId = await this.$route.query.board_id;
+    this.userIdentity = await localStorage.getItem('useridentity');
 
-    this.$store.dispatch('fetchBoard', boardId);
+    await this.$store.dispatch('fetchBoard', [parseInt(this.boardId), this.userIdentity]);
+    await this.$store.dispatch('getCommentsByBoard', [this.userIdentity, parseInt(this.boardId)]);
 
-  }
+  },
+  apollo: boardSub
 };
 </script>
 

@@ -1,9 +1,34 @@
 import gql from 'graphql-tag';
-import {apolloClient} from '../main'
+import {apolloClient} from '../main';
+import { arrangeComments } from "../utils/dataHandler";
 
 export default {
 
-  async fetchBoard({ commit }, id) {
+  async getStarredBoards({ commit }, useridentity) {
+    const response = await apolloClient.query({
+      query: gql`
+        query getStarredBoardsByUser($useridentity: String!) {
+          getStarredBoardsByUser(useridentity: $useridentity){
+            is_voted
+            boardId
+          }
+      }
+      `,
+      variables: { useridentity: useridentity },
+      update: function(data) {
+      }
+    });
+
+    // starred board ids
+    let boardIds = [];
+
+    response.data.getStarredBoardsByUser.map(item=> {
+      boardIds.push(item.boardId);
+    });
+    return boardIds;
+  },
+
+  async fetchBoard({ commit, dispatch }, data) {
     const response = await apolloClient.query({
       query: gql`
         query getBoard($id: Int!) {
@@ -23,13 +48,71 @@ export default {
           }
       }
       `,
-      variables: { id: parseInt(id) },
+      variables: {
+        id: data[0],
+        useridentity: data[1],
+      },
       update: function(data) {
-        // this is not get called
-        console.log(data);
-        // this.columns = data.getBoard.columns;
+        const comments = dispatch('getCommentsByBoard', [userIdentity.toString(), parseInt(boardId)]);
+
+        response.data.getBoard.columns.map(column => {
+          column.cards.map(card => {
+
+            comments.map(comment => {
+              if(parseInt(card.id) === comment.card) {
+                card.comments = comment.comments;
+                card.comments = comment.comments;
+              }
+            });
+
+            if (votesOfCards.includes(parseInt(card.id))) {
+              card.isLiked = true;
+            } else {
+              card.isLiked = false;
+            }
+          })
+        });
+        // console.log(JSON.stringify(comments))
+
+        commit('setBoard', response.data.getBoard);
       }
     });
+
+    const boardId = data[0];
+    const userIdentity= data[1];
+    const votesOfCards = await dispatch('getVoteCardsByUser', [userIdentity.toString(), parseInt(boardId)]);
+    const comments = await dispatch('getCommentsByBoard', [userIdentity.toString(), parseInt(boardId)]);
+
+    // response.data.getBoard.columns.map(column => {
+    //   column.cards.map(card => {
+    //       if (votesOfCards.includes(parseInt(card.id))) {
+    //         card.isLiked = true;
+    //       } else {
+    //         card.isLiked = false;
+    //       }
+    //   })
+    // });
+
+    // console.log(comments);
+    // add comments for each card
+    response.data.getBoard.columns.map(column => {
+      column.cards.map(card => {
+
+        comments.map(comment => {
+          if(parseInt(card.id) === comment.card) {
+            card.comments = comment.comments;
+            card.comments = comment.comments;
+          }
+        });
+
+        if (votesOfCards.includes(parseInt(card.id))) {
+          card.isLiked = true;
+        } else {
+          card.isLiked = false;
+        }
+      })
+    });
+    // console.log(JSON.stringify(comments))
 
     commit('setBoard', response.data.getBoard);
   },
@@ -53,16 +136,13 @@ export default {
         useridentity: data[0],
       },
       update: function(data) {
-        // console.log(JSON.stringify(data.data));
-        // dispatch('fetchBoardList');
       },
     });
-    console.log(JSON.stringify(response.data.login));
 
     localStorage.setItem('token', response.data.login.token);
     localStorage.setItem('refreshToken', response.data.login.refreshToken);
   },
-  async fetchBoardList({ commit }) {
+  async fetchBoardList({ commit, dispatch }) {
     const response = await apolloClient.query({
       query: gql`
         query getBoards {
@@ -75,8 +155,165 @@ export default {
       `,
     });
 
-    commit('setBoardList', response.data.getBoards);
+    const userIdentity = localStorage.getItem('useridentity');
+    const boards = response.data.getBoards;
+    if (userIdentity) {
+      const starredBoardIds = await dispatch('getStarredBoards', userIdentity);
+
+      // add a true property for isLiked in vuex boards
+      boards.map(board=> {
+
+        if (starredBoardIds.includes(parseInt(board.id))) {
+          board.isLiked = true;
+        } else {
+          board.isLiked = false;
+        }
+      })
+    }
+
+    commit('setBoardList', boards);
   },
+
+  async starBoard({ commit, dispatch }, data) {
+    const response = await apolloClient.mutate({
+      mutation: gql`
+        mutation ($useridentity: String!, $is_voted: Boolean, $boardId: Int!) {
+        starBoard(useridentity: $useridentity, is_voted: $is_voted, boardId: $boardId) {
+          ok
+          star_board{
+            is_voted
+          }
+          errors{
+            path
+            message
+          }
+        }
+      }
+      `,
+      variables: {
+        useridentity: data[0],
+        is_voted: data[1],
+        boardId: data[2],
+      },
+      update: function(data) {
+      },
+    });
+
+    dispatch('fetchBoardList');
+  },
+
+  async starCard({ commit, dispatch }, data) {
+    const response = await apolloClient.mutate({
+      mutation: gql`
+        mutation ($cardId:Int!, $useridentity: String!, $is_voted: Boolean, $boardId: Int!) {
+        starCard(cardId: $cardId, useridentity: $useridentity, is_voted: $is_voted, boardId: $boardId) {
+          ok
+          vote_card{
+            is_voted
+            useridentity
+            cardId
+          }
+          errors{
+            path
+            message
+          }
+        }
+      }
+      `,
+      variables: {
+        cardId: data[0],
+        useridentity: data[1],
+        is_voted: data[2],
+        boardId: data[3],
+      },
+      update: function(res_data) {
+        const useridentity= data[1];
+        const board_id = data[3];
+        dispatch('fetchBoard',[parseInt(board_id), useridentity]);
+      },
+    });
+  },
+
+  async removeStarCard({ commit, dispatch }, data) {
+    const response = await apolloClient.mutate({
+      mutation: gql`
+        mutation ($cardId: Int!, $useridentity: String!, $boardId: Int!) {
+        removeStarCard(cardId: $cardId, useridentity: $useridentity, boardId: $boardId) {
+          ok
+          errors{
+            path
+            message
+          }
+        }
+      }
+      `,
+      variables: {
+        cardId: data[0],
+        useridentity: data[1],
+        boardId: data[2],
+      },
+      update: function(res_data) {
+        const useridentity= data[1];
+        const boardId= data[2];
+        dispatch('fetchBoard',[boardId, useridentity]);
+      },
+    });
+
+    dispatch('fetchBoardList');
+  },
+
+
+  async getVoteCardsByUser({ commit }, data) {
+    const response = await apolloClient.query({
+      query: gql`
+        query getVoteCardsByUser($useridentity: String!, $boardId: Int!) {
+          getVoteCardsByUser(useridentity: $useridentity, boardId: $boardId){
+            cardId
+            boardId
+          }
+      }
+      `,
+      variables: {
+        useridentity: data[0],
+        boardId: data[1],
+      },
+      update: function(data) {
+      }
+    });
+
+    // starred board ids
+    let cardIds = [];
+
+    response.data.getVoteCardsByUser.map(item=> {
+      cardIds.push(item.cardId);
+    });
+    return cardIds;
+  },
+
+  async removeStarBoard({ commit, dispatch }, data) {
+    const response = await apolloClient.mutate({
+      mutation: gql`
+        mutation ($boardId: Int!, $useridentity: String!) {
+        removeStarBoard(boardId: $boardId, useridentity: $useridentity) {
+          ok
+          errors{
+            path
+            message
+          }
+        }
+      }
+      `,
+      variables: {
+        boardId: data[0],
+        useridentity: data[1],
+      },
+      update: function(data) {
+      },
+    });
+
+    dispatch('fetchBoardList');
+  },
+
 
   async addBoard({ commit, dispatch }, data) {
     const response = await apolloClient.mutate({
@@ -97,23 +334,16 @@ export default {
         description: data[1],
       },
       update: function(data) {
-        // console.log(JSON.stringify(data));
         dispatch('fetchBoardList');
       },
     });
-
-    // console.log(response.data.createBoard.board);
-    // commit('addBoard', response.data.createBoard.board);
-    // console.log(response.data.createBoard);
-
-    // commit('setBoardList', response.data.getBoards);
   },
 
   async addColumn({ commit, dispatch }, data) {
     const response = await apolloClient.mutate({
       mutation: gql`
-        mutation ($name: String!, $description: String!) {
-        createColumn(name: $name, description: $description) {
+        mutation ($boardId: Int!, ,$name: String!, $description: String!, $order_num: Int!) {
+        createColumn(boardId: $boardId, name: $name, description: $description, order_num: $order_num) {
           ok
           column{
             id
@@ -124,21 +354,18 @@ export default {
       }
       `,
       variables: {
-        board_id: data[0],
+        boardId: data[0],
         name: data[1],
         description: data[2],
+        order_num: data[3],
+        useridentity: data[4]
       },
-      update: function(data) {
-        // console.log(JSON.stringify(data));
-        dispatch('fetchBoardList');
+      update: function(res_data) {
+        const boardId = data[0];
+        const useridentity= data[4];
+        dispatch('fetchBoard', [boardId, useridentity]);
       },
     });
-
-    // console.log(response.data.createBoard.board);
-    // commit('addBoard', response.data.createBoard.board);
-    // console.log(response.data.createBoard);
-
-    // commit('setBoardList', response.data.getBoards);
   },
 
   async addCard({ commit, dispatch }, data) {
@@ -159,20 +386,15 @@ export default {
         columnId: data[0],
         name: data[1],
         description: data[2],
-        order_num: data[3]
+        order_num: data[3],
+        useridentity: data[4]
       },
       update: function(res_data) {
+        const useridentity = data[4];
         const boardId = data[4];
-        console.log(boardId)
-        dispatch('fetchBoard', boardId);
+        dispatch('fetchBoard', [boardId, useridentity]);
       },
     });
-
-    // console.log(response.data.createBoard.board);
-    // commit('addBoard', response.data.createBoard.board);
-    // console.log(response.data.createBoard);
-
-    // commit('setBoardList', response.data.getBoards);
   },
 
   async updateBoard({ commit, dispatch }, data) {
@@ -193,14 +415,9 @@ export default {
         description: data[2],
       },
       update: function(data) {
-        // console.log(JSON.stringify(data));
         dispatch('fetchBoardList');
       },
     });
-
-    // commit('addBoard', response.data.createBoard.board);
-
-    // commit('setBoardList', response.data.getBoards);
   },
 
   async updateColumn({ commit, dispatch }, data) {
@@ -220,14 +437,19 @@ export default {
         name: data[1],
         description: data[2],
       },
-      update: function(data) {
-        // dispatch('fetchBoardList');
+      update: function(res_data) {
+        let userIdentity = data[4];
+        let boardId = data[3];
+        if (typeof boardId === "number"){
+          boardId = parseInt(boardId)
+        }
+
+        if (typeof userIdentity === "string"){
+          userIdentity = userIdentity.toString();
+        }
+        dispatch('fetchBoard', [boardId, userIdentity]);
       },
     });
-
-    // commit('addBoard', response.data.createBoard.board);
-
-    // commit('setBoardList', response.data.getBoards);
   },
 
   async updateCard({ commit, dispatch }, data) {
@@ -253,16 +475,14 @@ export default {
       },
       update: function(res_data) {
         const boardId = data[3];
-        dispatch('fetchBoard', boardId);
+        const userIdentity = data[4];
+        dispatch('fetchBoard', [boardId, userIdentity]);
       },
     });
-
-    // commit('addBoard', response.data.createBoard.board);
-
-    // commit('setBoardList', response.data.getBoards);
   },
 
   async deleteCard({ commit, dispatch }, data) {
+    // console.log(JSON.stringify(data))
     const response = await apolloClient.mutate({
       mutation: gql`
         mutation ($id: Int!){
@@ -277,178 +497,114 @@ export default {
       variables: {
         id: data[0],
       },
-      update: function(res_data) {
+      update: async function(res_data) {
         const boardId = data[1];
-        dispatch('fetchBoard', boardId);
+        let userIdentity = data[2];
+
+        if (!userIdentity) {
+          userIdentity = await localStorage.getItem('useridentity')
+        }
+
+        dispatch('fetchBoard', [boardId, userIdentity]);
+      },
+    });
+  },
+
+  async deleteBoard({ commit, dispatch }, data) {
+    // console.log(JSON.stringify(data))
+    const response = await apolloClient.mutate({
+      mutation: gql`
+        mutation ($id: Int!){
+          deleteBoard(id:$id){
+            ok
+            errors{
+              message
+            }
+          }
+        }
+      `,
+      variables: {
+        id: data[0],
+      },
+      update: async function(res_data) {
+
+        dispatch('fetchBoardList');
+      },
+    });
+  },
+
+  async addComment({ commit, dispatch }, data) {
+    const response = await apolloClient.mutate({
+      mutation: gql`
+        mutation ($message: String!, $cardId:Int!, $useridentity: String!, $boardId: Int!) {
+        addComment(message: $message, cardId: $cardId, useridentity: $useridentity, boardId: $boardId) {
+          ok
+          comment{
+            message
+          }
+          errors{
+            path
+            message
+          }
+        }
+      }
+      `,
+      variables: {
+        message: data[0],
+        cardId: data[1],
+        useridentity: data[2],
+        boardId: data[3],
+      },
+      update: function(res_data) {
+        // console.log(JSON.stringify(res_data))
+        const useridentity = data[2];
+        const board_id = data[3];
+        dispatch('fetchBoard',[parseInt(board_id), useridentity]);
       },
     });
 
-    // commit('addBoard', response.data.createBoard.board);
+    const useridentity = data[2];
+    const board_id = data[3];
+    dispatch('fetchBoard',[parseInt(board_id), useridentity]);
+  },
 
-    // commit('setBoardList', response.data.getBoards);
+  async getCommentsByBoard({ commit, dispatch }, data) {
+    const response = await apolloClient.query({
+      query: gql`
+        query getCommentsByBoard($boardId: Int!) {
+          getCommentsByBoard(boardId: $boardId){
+            message
+            cardId
+          }
+      }
+      `,
+      variables: {
+        useridentity: data[0],
+        boardId: data[1],
+      },
+      update: function(data) {
+      }
+    });
+
+    // const boardId = data[0];
+    // const userIdentity= data[1];
+    // const votesOfCards = await dispatch('getVoteCardsByUser', [userIdentity.toString(), parseInt(boardId)]);
+
+    let comments = response.data.getCommentsByBoard;
+    return comments = arrangeComments(comments);
+    // response.data.getCommentsByBoard.map(comment => {
+    //   console.log(comment);
+    //   // column.cards.map(card => {
+    //   //   if (votesOfCards.includes(parseInt(card.id))) {
+    //   //     card.isLiked = true;
+    //   //   } else {
+    //   //     card.isLiked = false;
+    //   //   }
+    //   // })
+    // });
+
+    // commit('setBoard', response.data.getBoard);
   },
 
 
-  // setCurrentBoard({ commit }, board) {
-  //     commit('SET_BOARD', board)
-  // },
-  // async getBoards({ commit }) {
-  //     const boards = await axios.get('/boards', config);
-  //     commit('SET_BOARDS', boards.data.boards);
-  // },
-  // async getCards({ commit }) {
-  //     const cards = await axios.get('/cards', config);
-  //     commit('SET_CARDS', cards.data.cards);
-  // },
-  // async getCardByBoard({ commit }, boardId) {
-  //     const cards = await axios.get('/cards/'+boardId, config);
-  //
-  //     commit('SET_CARDS', cards.data.cards);
-  // },
-  // async getTasksByCard({ commit }, card_id) {
-  //     const tasks = await axios.get('/tasks/'+card_id, config);
-  //
-  //     commit('SET_TASKS', tasks.data.tasks);
-  // },
-  // async getTasksByBoard({ commit }, board_id) {
-  //     const tasks = await axios.get('/tasks/byboard/'+board_id, config);
-  //     commit('SET_TASKS_OF_A_BOARD', tasks.data.tasks);
-  // },
-  // async addBoard({ commit, dispatch }, board) {
-  //     let newBoard = await axios.post('/boards', {
-  //         board_name:board.board_name,
-  //         board_descr:board.board_descr
-  //     }, config)
-  //      .then(function (response) {
-  //          // commit('ADD_BOARD', response.data.result);
-  //          dispatch('getBoards');
-  //       })
-  //       .catch(function (error) {
-  //         console.log(error);
-  //       });
-  // },
-  // async setCards({ commit }, cards) {
-  //     // const board = await this.$axios.post('/boards', data);
-  //     commit('SET_CARDS', cards);
-  // },
-  // async addCard({ commit, dispatch }, card) {
-  //     let newCard = await axios.post('/cards', {
-  //         card_name:card.card_name,
-  //         card_descr:card.card_descr,
-  //         board_id:card.board_id
-  //     }, config)
-  //         .then(function (response) {
-  //             // commit('ADD_BOARD', response.data.result);
-  //             dispatch('getCardByBoard',card.board_id);
-  //         })
-  //         .catch(function (error) {
-  //             console.log(error);
-  //         });
-  // },
-  // async addTask({ commit, dispatch }, data) {
-  //     // console.log(JSON.stringify(data[0]));
-  //     let task = data[0];
-  //     let curr_board = data[1];
-  //
-  //     if (task.task_name === null || task.task_name === undefined || task.task_name === '') {
-  //         return;
-  //     }
-  //     await axios.post('/tasks', task, config)
-  //         .then(function (response) {
-  //             // commit('ADD_BOARD', response.data.result);
-  //             // dispatch('getTasksByCard',card.board_id);
-  //             dispatch('getTasksByBoard', curr_board.board_id);
-  //         })
-  //         .catch(function (error) {
-  //             console.log(error);
-  //         });
-  //     // commit('ADD_TASK', task);
-  // },
-  // async getBoard({ state, commit }, slug) {
-  //     if (state.current.slug !== slug) commit('CLEAR_BOARD');
-  //     const board = await this.$axios.get(`/boards/${slug}`);
-  //     commit('SET_BOARD', board.data);
-  //     commit('SET_BG', board.data.image, { root: true });
-  // },
-  // async updateTask({ commit, dispatch }, data) {
-  //     console.log(JSON.stringify(data[0]))
-  //     console.log(JSON.stringify(data[1]))
-  //     const tasks = await axios.patch(`/tasks/`, data[0], config);
-  //     dispatch('getTasksByBoard',data[1]);
-  //
-  //
-  //     // commit('SET_TASKS_OF_A_BOARD', tasks.data.tasks);
-  //
-  //     // const updated = await this.$axios.patch(`/boards/${board._id}`, board);
-  //     // commit('SET_BOARD', updated.data);
-  // },
-  // async updateCard({ commit, dispatch }, data) {
-  //     const cards = await axios.patch(`/cards/`, data[0], config);
-  //     dispatch('getCardByBoard',data[1]);
-  //
-  //     // commit('SET_TASKS_OF_A_BOARD', tasks.data.tasks);
-  //
-  //     // const updated = await this.$axios.patch(`/boards/${board._id}`, board);
-  //     // commit('SET_BOARD', updated.data);
-  // },
-  // async updateBoard({ commit, dispatch }, board) {
-  //     const cards = await axios.patch(`/boards/`, board, config);
-  //     dispatch('getBoards');
-  //
-  //     // commit('SET_TASKS_OF_A_BOARD', tasks.data.tasks);
-  //
-  //     // const updated = await this.$axios.patch(`/boards/${board._id}`, board);
-  //     // commit('SET_BOARD', updated.data);
-  // },
-  // async deleteTaskAction({ commit, dispatch }, data) {
-  //     const tasks = await axios.delete(`/tasks/`+data[0].task_id, config);
-  //     dispatch('getTasksByBoard',data[1]);
-  //
-  //
-  //     // commit('SET_TASKS_OF_A_BOARD', tasks.data.tasks);
-  //
-  //     // const updated = await this.$axios.patch(`/boards/${board._id}`, board);
-  //     // commit('SET_BOARD', updated.data);
-  // },
-  // async deleteCardAction({ commit, dispatch }, data) {
-  //     const cards = await axios.delete(`/cards/`+data[0], config);
-  //     dispatch('getCardByBoard',data[1]);
-  //
-  //
-  //     // commit('SET_TASKS_OF_A_BOARD', tasks.data.tasks);
-  //
-  //     // const updated = await this.$axios.patch(`/boards/${board._id}`, board);
-  //     // commit('SET_BOARD', updated.data);
-  // },
-  //
-  //
-  // async deleteBoardAction({ commit, dispatch }, id) {
-  //     await axios.delete(`/boards/${id}`, config);
-  //     dispatch('getBoards');
-  // },
-  //
-  // async likeTask({ commit, dispatch }, task_id) {
-  //     await axios.patch(`/tasks/likes/${task_id}/1`,{}, config);
-  //     // dispatch('getBoards');
-  // },
-  // async leaveBoard({ commit }, boardId) {
-  //     await this.$axios.patch(`/boards/${boardId}/leave`);
-  //     commit('CLEAR_BOARD');
-  // },
-  // insertCard({ commit, dispatch }, params) {
-  //   params.card = { _id: params.cardId };
-  //   params.editable = false;
-  //   commit('ADD_CARD', params);
-  //
-  //   dispatch('updateBoard', {
-  //     _id: params.boardId,
-  //     groups: state.current.groups,
-  //   });
-  // },
-  // async addCard({ commit }, params) {
-  //   const card = await this.$axios.post(`/cards/${params.boardId}`);
-  //   params.card = card.data;
-  //   params.editable = true;
-  //   commit('ADD_CARD', params);
-  // },
 };

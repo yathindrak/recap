@@ -33,7 +33,9 @@ export default {
       this.popupActivo=true
     },
     async addCard() {
-      await this.$store.dispatch('addCard', [parseInt(this.columnId), this.card_name, this.card_descr, this.order_num, parseInt(this.boardId)]);
+      const useridentity = await localStorage.getItem('useridentity');
+      await this.$store.dispatch('addCard', [parseInt(this.columnId), this.card_name, this.card_descr,
+        this.order_num, parseInt(this.boardId), useridentity]);
       this.card_name ='';
       this.card_descr = '';
       this.popupActivo = false;

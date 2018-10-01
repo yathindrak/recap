@@ -15,17 +15,26 @@
             >
 
             </AddBoardModal>
+          <AddColumnModal
+                    id="add-col-btn"
+                    userIdentity="userIdentity"
+                    v-if="this.$route.path==='/board'"
+            >
+
+            </AddColumnModal>
             <!--<vs-button vs-color="success" id="add-board-btn" vs-type="filled" vs-icon="note_add">Add Board</vs-button>-->
         </vs-navbar>
     </div>
 </template>
 <script>
-import AddBoardModal from "@/components/AddBoardModal.vue";
+import AddBoardModal from "@/components/modals/AddBoardModal.vue";
+import AddColumnModal from "@/components/modals/AddColumnModal.vue";
 
 export default {
-  components: { AddBoardModal },
+  components: { AddBoardModal, AddColumnModal },
   data: () => ({
     activeItem: 0,
+    userIdentity: localStorage.getItem('useridentity'),
     type: "gradient"
   }),
   methods: {
@@ -38,7 +47,7 @@ export default {
 </script>
 
 <style>
-#add-board-btn {
+#add-board-btn , #add-col-btn{
   position: absolute;
   right: 2px;
   top: 1px;

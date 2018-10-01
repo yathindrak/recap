@@ -1,46 +1,88 @@
 <template lang="html">
-    <div class="centerx">
-    </div>
+  <div class="centerx">
+    <vs-button vs-type="flat" @click="openAlert('danger')" vs-color="primary" vs-icon="delete">
+    </vs-button>
+  </div>
 </template>
 
 <script>
-export default {
-  name: "DeleteModal",
-  props: ["bus", "type"],
-  data: () => ({
-    activeConfirm: false,
-  }),
-  mounted() {
-    this.bus.$on("confDelete", this.openConfirm);
-  },
-  methods: {
-    openConfirm(objectParams) {
-      this.$vs.dialog({
-        type: "confirm",
-        color: "danger",
-        title: `Confirm`,
-        text: `Are you sure you want to delete this ${this.item}`,
-        accept: this.acceptAlert(objectParams)
-      });
+  import gql from "graphql-tag";
+
+  export default {
+    name: "DeleteModal",
+    props: {
+      type:'',
+      boardId:'',
+      cardId:'',
+      userIdentity: String,
     },
-    acceptAlert(objectParams) {
-      console.log(objectParams);
-      if(!objectParams){
-        return;
-      }
+    data:()=>({
+      colorAlert:'primary',
+      titleAlert:'Alert',
+      activeAlert:false,
+      valueInput:'',
+    }),
+    apollo: {
+      // Subscriptions
+      $subscribe: {
+        boardDeleted: {
+          query: gql`subscription {
+          boardDeleted{
+            id
+          }
+        }`,
+          // Result hook
+          result() {
+            console.log('SOMEONE EDITED A BOARD');
+            this.$store.dispatch('fetchBoardList');
+          },
+        },
 
-      if (objectParams.type === "delete-card") {
+        cardDeleted: {
+          query: gql`subscription {
+          cardDeleted{
+            id
+          }
+        }`,
+          // Result hook
+          result() {
+            console.log('SOMEONE EDITED A BOARD');
+            this.$store.dispatch('fetchBoard',[parseInt(this.boardId), this.userIdentity]);
+          },
+        },
+      },
+    },
+    methods:{
+      openAlert(color){
+        this.colorAlert = color || this.getColorRandom();
+        this.$vs.dialog({
+          color:this.colorAlert,
+          title: `Delete ${this.type}`,
+          text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+          accept:this.acceptAlert
+        })
+      },
+      async acceptAlert(){
+        const user = await this.userIdentity;
+        if (this.type === 'card') {
+          await this.$store.dispatch('deleteCard', [parseInt(this.cardId), parseInt(this.boardId)], user);
+        } else if (this.type === 'board') {
+          await this.$store.dispatch('deleteBoard', [parseInt(this.boardId)], user);
+        }
 
-        console.log('Card deleted id:' , objectParams.id);
-        // this.$store.dispatch('deleteCard', [parseInt(objectParams.id), objectParams.boardId]);
-      }
-
-      this.$vs.notify({
-        color: "danger",
-        title: "Deleted Item",
-        text: "The item was successfully deleted"
-      });
+        this.$vs.notify({
+          color:this.colorAlert,
+          title: `Deleted ${this.type}`,
+          text:'Lorem ipsum dolor sit amet, consectetur'
+        })
+      },
+      getColorRandom(){
+        function getRandomInt(min, max) {
+          return Math.floor(Math.random() * (max - min)) + min;
+        }
+        return `rgb(${getRandomInt(0,255)},${getRandomInt(0,255)},${getRandomInt(0,255)})`
+      },
     }
   }
-};
 </script>
+

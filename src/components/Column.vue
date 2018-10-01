@@ -5,20 +5,20 @@
             <!--<vs-button vs-color="success" vs-type="flat" vs-icon="dehaze"></vs-button>&lt;!&ndash;column options&ndash;&gt;-->
 
             <vs-row>
-                <vs-dropdown>
-                    <vs-button vs-color="success" class="btn-drop" vs-type="flat" vs-icon="dehaze"></vs-button>
-                    <vs-dropdown-menu class="font">
-                        <vs-dropdown-item>
-                            Edit
-                        </vs-dropdown-item>
-                        <vs-dropdown-item>
-                            delete
-                        </vs-dropdown-item>
-                    </vs-dropdown-menu>
-                </vs-dropdown><!--End of column drop down -->
+                <!--<vs-dropdown>-->
+                    <!--<vs-button vs-color="success" class="btn-drop" vs-type="flat" vs-icon="dehaze"></vs-button>-->
+                    <!--&lt;!&ndash;<vs-dropdown-menu class="font">&ndash;&gt;-->
+                        <!--&lt;!&ndash;<vs-dropdown-item @click="popupActivo=true">&ndash;&gt;-->
+                            <!--&lt;!&ndash;Edit&ndash;&gt;-->
+                        <!--&lt;!&ndash;</vs-dropdown-item>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<vs-dropdown-item>&ndash;&gt;-->
+                            <!--&lt;!&ndash;delete&ndash;&gt;-->
+                        <!--&lt;!&ndash;</vs-dropdown-item>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</vs-dropdown-menu>&ndash;&gt;-->
+                <!--</vs-dropdown>&lt;!&ndash;End of column drop down &ndash;&gt;-->
               <AddCardModal :columnId="columnId"></AddCardModal>
+              <EditColumnModal :column="{id: columnId, name: name, description: description}" ></EditColumnModal>
             </vs-row>
-
 
             <h3>
                 {{this.name}}
@@ -35,11 +35,12 @@
 </template>
 
 <script>
-import AddCardModal from "./AddCardModal";
+import AddCardModal from "./modals/AddCardModal";
+import EditColumnModal from './modals/EditColumnModal';
 
 export default {
   name: "Column",
-  components: { AddCardModal },
+  components: { AddCardModal,EditColumnModal },
   props: {
     columnId: '',
     name: String,
