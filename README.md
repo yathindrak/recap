@@ -45,4 +45,4 @@ Warmly welcome pull requests from any contributor
 
 ## License
 
-MIT © 2018 Recap
+MIT © 2018 Yathindra Kodithuwakku
