@@ -6,7 +6,6 @@ export function arrangeComments(a) {
   let temp_comments = [];
 
   let mCurrent;
-  // console.log(JSON.stringify(a))
   for (let i=0; i < a.length; i++) {
     mCurrent = a[i];
     alreadyChecked = false;
@@ -99,7 +98,6 @@ export function arrangeCardVotes(votes)
             cardVotes.map(item=> {
               if(item.card === mCurrent.cardId){
                 ++item.likes;
-                console.log(JSON.stringify(item));
               }
             })
           }

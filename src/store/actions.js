@@ -61,17 +61,6 @@ export default {
     const comments = await dispatch('getCommentsByBoard', [userIdentity.toString(), parseInt(boardId)]);
     const votes = await dispatch('getVoteCardsByBoard', [parseInt(boardId)]);
 
-    // response.data.getBoard.columns.map(column => {
-    //   column.cards.map(card => {
-    //       if (votesOfCards.includes(parseInt(card.id))) {
-    //         card.isLiked = true;
-    //       } else {
-    //         card.isLiked = false;
-    //       }
-    //   })
-    // });
-
-    // console.log(comments);
     // add comments for each card
     response.data.getBoard.columns.map(column => {
       column.cards.map(card => {
@@ -96,7 +85,6 @@ export default {
         }
       })
     });
-    // console.log(JSON.stringify(comments))
 
     commit('setBoard', response.data.getBoard);
   },
@@ -466,7 +454,6 @@ export default {
   },
 
   async deleteCard({ commit, dispatch }, data) {
-    // console.log(JSON.stringify(data))
     const response = await apolloClient.mutate({
       mutation: gql`
         mutation ($id: Int!){
