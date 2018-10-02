@@ -1,9 +1,8 @@
 {
-  "name": "xl-retro-client",
+  "name": "recap",
   "version": "1.0.0",
-  "description": "A Vue.js project",
+  "description": "Open source kanban board for scrum retrospective",
   "author": "Yathindra Kodithuwakku <yathindrarawya123@gmail.com>",
-  "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",

@@ -1,11 +1,12 @@
-let cardComments = [];
-let alreadyCheckedIDS = [];
-let alreadyChecked = false;
-let temp_comments = [];
+export function arrangeComments(a) {
 
-export function arrangeComments(a)
-{
+  let cardComments = [];
+  let alreadyCheckedIDS = [];
+  let alreadyChecked = false;
+  let temp_comments = [];
+
   let mCurrent;
+  // console.log(JSON.stringify(a))
   for (let i=0; i < a.length; i++) {
     mCurrent = a[i];
     alreadyChecked = false;
@@ -28,6 +29,7 @@ export function arrangeComments(a)
           });
 
           temp_comments.push(a[j].message);
+
 
           if(!exists){
 

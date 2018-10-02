@@ -52,30 +52,7 @@ export default {
         id: data[0],
         useridentity: data[1],
       },
-      update: function(data) {
-        const comments = dispatch('getCommentsByBoard', [userIdentity.toString(), parseInt(boardId)]);
 
-        response.data.getBoard.columns.map(column => {
-          column.cards.map(card => {
-
-            comments.map(comment => {
-              if(parseInt(card.id) === comment.card) {
-                card.comments = comment.comments;
-                card.comments = comment.comments;
-              }
-            });
-
-            if (votesOfCards.includes(parseInt(card.id))) {
-              card.isLiked = true;
-            } else {
-              card.isLiked = false;
-            }
-          })
-        });
-        // console.log(JSON.stringify(comments))
-
-        commit('setBoard', response.data.getBoard);
-      }
     });
 
     const boardId = data[0];
@@ -586,24 +563,8 @@ export default {
       }
     });
 
-    // const boardId = data[0];
-    // const userIdentity= data[1];
-    // const votesOfCards = await dispatch('getVoteCardsByUser', [userIdentity.toString(), parseInt(boardId)]);
-
     let comments = response.data.getCommentsByBoard;
     return comments = arrangeComments(comments);
-    // response.data.getCommentsByBoard.map(comment => {
-    //   console.log(comment);
-    //   // column.cards.map(card => {
-    //   //   if (votesOfCards.includes(parseInt(card.id))) {
-    //   //     card.isLiked = true;
-    //   //   } else {
-    //   //     card.isLiked = false;
-    //   //   }
-    //   // })
-    // });
-
-    // commit('setBoard', response.data.getBoard);
   },
 
 

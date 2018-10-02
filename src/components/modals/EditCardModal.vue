@@ -99,8 +99,7 @@
       async addComment() {
         let userIdentity = localStorage.getItem('useridentity');
         await this.$store.dispatch('addComment', [this.comment, parseInt(this.cardId), userIdentity, parseInt(this.boardId)]);
-        this.closeModal();
-        // location.reload();
+        // this.closeModal();
       }
     }
   };
