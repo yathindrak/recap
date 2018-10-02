@@ -11,7 +11,8 @@
         <div class="footer" slot="footer">
             <vs-row vs-justify="flex-end">
                 <!--<vs-button vs-type="gradient" vs-color="primary" vs-icon="thumb_up"></vs-button>-->
-
+              <vs-button class="likes_count" v-if="likes_count === 1" disabled vs-color="dark" vs-type="line">{{likes_count}} like</vs-button>
+              <vs-button class="likes_count" v-if="likes_count !== 1" disabled vs-color="dark" vs-type="line">{{likes_count}} likes</vs-button>
               <vs-button v-if="!isLiked" v-on:click="this.vote" vs-type="line" vs-color="primary" vs-icon="star_border"></vs-button>
               <vs-button v-if="isLiked" v-on:click="this.vote" vs-type="line" vs-color="primary" vs-icon="star"></vs-button>
                 <vs-button vs-type="flat" vs-color="primary" vs-icon="edit" @click.prevent="confEdit"></vs-button>
@@ -47,7 +48,8 @@ export default {
     name: String,
     isLiked: Boolean,
     description: String,
-    comments: ''
+    comments: '',
+    likes_count: Number
   },
   methods: {
     confEdit() {
@@ -80,6 +82,10 @@ export default {
     transform: translateY(-20%);
     padding: 1em 0;
     overflow: inherit;
+  }
+
+  #likes_count {
+    color: black;
   }
 }
 </style>

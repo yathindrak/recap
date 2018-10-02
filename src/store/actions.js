@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 import {apolloClient} from '../main';
-import { arrangeComments } from "../utils/dataHandler";
+import { arrangeCardVotes, arrangeComments } from "../utils/dataHandler";
 
 export default {
 
@@ -59,6 +59,7 @@ export default {
     const userIdentity= data[1];
     const votesOfCards = await dispatch('getVoteCardsByUser', [userIdentity.toString(), parseInt(boardId)]);
     const comments = await dispatch('getCommentsByBoard', [userIdentity.toString(), parseInt(boardId)]);
+    const votes = await dispatch('getVoteCardsByBoard', [parseInt(boardId)]);
 
     // response.data.getBoard.columns.map(column => {
     //   column.cards.map(card => {
@@ -74,6 +75,12 @@ export default {
     // add comments for each card
     response.data.getBoard.columns.map(column => {
       column.cards.map(card => {
+
+        votes.map(vote => {
+          if(parseInt(card.id) === vote.card) {
+            card.likes_count = vote.likes;
+          }
+        });
 
         comments.map(comment => {
           if(parseInt(card.id) === comment.card) {
@@ -565,6 +572,28 @@ export default {
 
     let comments = response.data.getCommentsByBoard;
     return comments = arrangeComments(comments);
+  },
+
+  async getVoteCardsByBoard({ commit, dispatch }, data) {
+    const response = await apolloClient.query({
+      query: gql`
+        query getVoteCardsByBoard($boardId: Int!) {
+          getVoteCardsByBoard(boardId: $boardId){
+            useridentity
+            boardId
+            cardId
+          }
+      }
+      `,
+      variables: {
+        boardId: data[0],
+      },
+      update: function(data) {
+      }
+    });
+
+    let votes = response.data.getVoteCardsByBoard;
+    return votes = arrangeCardVotes(votes);
   },
 
 

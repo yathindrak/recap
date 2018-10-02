@@ -5,7 +5,7 @@
               vs-align="center" vs-lg="3" vs-sm="6" vs-xs="12">
         <column :columnId="column.id" :name="column.name" :description="column.description">
           <card v-for="card in column.cards" :key="card.id" :isLiked="card.isLiked" :comments="card.comments"
-                :cardId="card.id" :name="card.name" :description="card.description" />
+                :cardId="card.id" :name="card.name" :description="card.description" :likes_count="card.likes_count" />
         </column>
       </vs-col>
     </vs-row>

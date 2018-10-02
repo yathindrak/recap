@@ -56,3 +56,59 @@ export function arrangeComments(a) {
 
   return cardComments;
 }
+
+
+export function arrangeCardVotes(votes)
+{
+  var cardVotes = [];
+  var alreadyVotedIDS = [];
+  var alreadyChecked = false;
+
+  var mCurrent, likes_count;
+  for (var i=0; i < votes.length; i++) {
+    likes_count = 0;
+    mCurrent = votes[i];
+    alreadyChecked = false;
+
+
+    if(alreadyVotedIDS && alreadyVotedIDS.includes(mCurrent.cardId)) {
+      alreadyChecked = true;
+    }
+
+    if(!alreadyChecked){
+      for(var j=0; j<votes.length; j++){
+        if(mCurrent.cardId === votes[j].cardId){
+
+          var exists = false;
+
+          cardVotes.map(item=>{
+
+            if(item.card === mCurrent.cardId){
+              exists = true;
+            }
+          });
+
+          if(!exists){
+
+            cardVotes.push({
+              card: mCurrent.cardId,
+              likes: ++likes_count
+            });
+          } else {
+
+            cardVotes.map(item=> {
+              if(item.card === mCurrent.cardId){
+                ++item.likes;
+                console.log(JSON.stringify(item));
+              }
+            })
+          }
+        }
+      }
+    }
+
+    alreadyVotedIDS.push(mCurrent.cardId);
+  }
+
+  return cardVotes;
+}
