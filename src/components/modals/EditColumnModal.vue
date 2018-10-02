@@ -42,14 +42,8 @@
       async editColumn() {
         let userIdentity = await localStorage.getItem('useridentity');
         await this.$store.dispatch('updateColumn', [parseInt(this.column_id), this.column_name,
-          this.column_descr, parseInt(this.boardId), userIdentity]);
-        // await this.$store.dispatch('addBoard', [this.board_name, this.board_descr]);
-        // this.createBoard(this.board_name, this.board_descr);
-        // this.board_name ='';
-        // this.board_descr = '';
+        this.column_descr, parseInt(this.boardId), userIdentity]);
         this.popupActivo = false;
-        // for now reload the page
-        // location.reload()
       },
     },
   };

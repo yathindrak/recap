@@ -58,14 +58,16 @@
     },
     methods: {
       async editBoard() {
+
+        if (!this.board_name) {
+          this.board_name ='';
+          this.board_descr = '';
+          this.popupActivo = false;
+          return;
+        }
+
         await this.$store.dispatch('updateBoard', [parseInt(this.board_id), this.board_name, this.board_descr]);
-        // await this.$store.dispatch('addBoard', [this.board_name, this.board_descr]);
-        // this.createBoard(this.board_name, this.board_descr);
-        // this.board_name ='';
-        // this.board_descr = '';
         this.popupActivo = false;
-        // for now reload the page
-        // location.reload()
       },
     },
   };

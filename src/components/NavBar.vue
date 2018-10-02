@@ -7,7 +7,7 @@
             </vs-button>
 
             <vs-navbar-title>
-                <em>MathXL</em> Collaborator
+                <em>MathXL</em> Recap
             </vs-navbar-title>
             <AddBoardModal
                     id="add-board-btn"
@@ -22,7 +22,6 @@
             >
 
             </AddColumnModal>
-            <!--<vs-button vs-color="success" id="add-board-btn" vs-type="filled" vs-icon="note_add">Add Board</vs-button>-->
         </vs-navbar>
     </div>
 </template>
@@ -39,7 +38,6 @@ export default {
   }),
   methods: {
     gotoBoards() {
-      // this.$store.dispatch('fetchBoardList');
       this.$router.push("/");
     }
   }

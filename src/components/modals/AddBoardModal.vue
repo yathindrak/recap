@@ -27,6 +27,13 @@
     },
     methods: {
       async addBoard() {
+        if (!this.board_name) {
+          this.board_name ='';
+          this.board_descr = '';
+          this.popupActivo = false;
+          return;
+        }
+
         await this.$store.dispatch('addBoard', [this.board_name, this.board_descr]);
         this.board_name ='';
         this.board_descr = '';

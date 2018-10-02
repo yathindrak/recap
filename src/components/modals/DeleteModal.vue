@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="centerx">
-    <vs-button vs-type="flat" @click="openAlert('danger')" vs-color="primary" vs-icon="delete">
+    <vs-button class="font" vs-type="flat" @click="openAlert('danger')" vs-color="primary" vs-icon="delete">
     </vs-button>
   </div>
 </template>
@@ -58,7 +58,7 @@
         this.$vs.dialog({
           color:this.colorAlert,
           title: `Delete ${this.type}`,
-          text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+          text: 'Are you sure, you want to delete?',
           accept:this.acceptAlert
         })
       },
@@ -73,7 +73,7 @@
         this.$vs.notify({
           color:this.colorAlert,
           title: `Deleted ${this.type}`,
-          text:'Lorem ipsum dolor sit amet, consectetur'
+          text:''
         })
       },
       getColorRandom(){
@@ -86,3 +86,9 @@
   }
 </script>
 
+<style>
+
+  .font {
+    font-family: "Noto Sans", Arial, sans-serif !important;
+  }
+</style>

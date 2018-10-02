@@ -80,26 +80,30 @@
       },
       enableEditing: function(){
         this.editable = true;
-        // this.tempValue = this.value;
-        // this.editing = true;
       },
       disableEditing: function(){
         this.editable = false;
-        // this.tempValue = null;
-        // this.editing = false;
       },
       saveEdit: function(){
+        if(!this.title) {
+          this.closeModal();
+          return;
+        }
+
         // However we want to save it to the database
-        // this.value = this.tempValue;
         let userIdentity = localStorage.getItem('useridentity');
         const descr = document.getElementById('descr').value;
         this.$store.dispatch('updateCard', [parseInt(this.cardId), this.title, descr, parseInt(this.boardId), userIdentity]);
         this.disableEditing();
       },
       async addComment() {
+        if(!this.comment) {
+          this.comment = '';
+          return;
+        }
         let userIdentity = localStorage.getItem('useridentity');
         await this.$store.dispatch('addComment', [this.comment, parseInt(this.cardId), userIdentity, parseInt(this.boardId)]);
-        // this.closeModal();
+        this.comment = '';
       }
     }
   };

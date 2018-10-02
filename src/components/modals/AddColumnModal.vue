@@ -32,6 +32,13 @@
     },
     methods: {
       async addColumn() {
+        if(!this.column_name) {
+          this.column_name ='';
+          this.column_descr = '';
+          this.popupActivo = false;
+          return;
+        }
+
         const useridentity = await localStorage.getItem('useridentity');
         await this.$store.dispatch('addColumn', [parseInt(this.boardId), this.column_name, this.column_descr, this.order_num, useridentity]);
         this.column_name ='';
