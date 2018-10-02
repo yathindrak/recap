@@ -6,7 +6,6 @@ export default {
     state.boards = boards;
   },
   addBoard(state, board) {
-    console.log(board);
     state.boards.push(board);
   },
 };

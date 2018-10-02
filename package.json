@@ -18,6 +18,7 @@
     "apollo-link-http": "^1.5.5",
     "apollo-link-ws": "^1.0.9",
     "apollo-utilities": "^1.0.21",
+    "dotenv": "^6.0.0",
     "graphql": "^14.0.2",
     "graphql-tag": "^2.9.2",
     "material-icons": "^0.2.3",

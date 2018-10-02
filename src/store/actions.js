@@ -495,7 +495,6 @@ export default {
   },
 
   async deleteBoard({ commit, dispatch }, data) {
-    // console.log(JSON.stringify(data))
     const response = await apolloClient.mutate({
       mutation: gql`
         mutation ($id: Int!){
@@ -515,6 +514,30 @@ export default {
         dispatch('fetchBoardList');
       },
     });
+  },
+
+  async deleteColumn({ commit, dispatch }, data) {
+    const response = await apolloClient.mutate({
+      mutation: gql`
+        mutation ($id: Int!){
+          deleteColumn(id:$id){
+            ok
+            errors{
+              message
+            }
+          }
+        }
+      `,
+      variables: {
+        id: data[0],
+      },
+      update: async function(res_data) {
+      },
+    });
+
+    const useridentity = data[1];
+    const board_id = data[2];
+    dispatch('fetchBoard',[parseInt(board_id), useridentity]);
   },
 
   async addComment({ commit, dispatch }, data) {
@@ -540,7 +563,6 @@ export default {
         boardId: data[3],
       },
       update: function(res_data) {
-        // console.log(JSON.stringify(res_data))
         const useridentity = data[2];
         const board_id = data[3];
         dispatch('fetchBoard',[parseInt(board_id), useridentity]);

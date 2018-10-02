@@ -11,7 +11,6 @@ export default {
         }`,
       // Result hook
       result() {
-        console.log('SOMEONE ADDED A BOARD');
         this.$store.dispatch('fetchBoardList');
       },
     },

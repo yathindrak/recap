@@ -43,7 +43,6 @@
         }`,
           // Result hook
           result() {
-            console.log('SOMEONE EDITED A BOARD');
             this.$store.dispatch('fetchBoardList');
           },
         },

@@ -143,4 +143,7 @@
   #no-comments {
     color: #5a504e;
   }
+  #descr{
+    font-size: medium;
+  }
 </style>

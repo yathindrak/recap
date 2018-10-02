@@ -58,5 +58,49 @@ export default  {
         this.$store.dispatch('fetchBoard',[parseInt(this.boardId), this.userIdentity]);
       },
     },
+    columnDeleted: {
+      query: gql`subscription {
+          columnDeleted{
+            id
+          }
+        }`,
+      // Result hook
+      result() {
+        this.$store.dispatch('fetchBoard',[parseInt(this.boardId), this.userIdentity]);
+      },
+    },
+    voteCardAdded: {
+      query: gql`subscription {
+          voteCardAdded{
+            cardId
+          }
+        }`,
+      // Result hook
+      result() {
+        this.$store.dispatch('fetchBoard',[parseInt(this.boardId), this.userIdentity]);
+      },
+    },
+    voteCardDeleted: {
+      query: gql`subscription {
+          voteCardDeleted{
+            is_voted
+          }
+        }`,
+      // Result hook
+      result() {
+        this.$store.dispatch('fetchBoard',[parseInt(this.boardId), this.userIdentity]);
+      },
+    },
+    commentAdded: {
+      query: gql`subscription {
+          commentAdded{
+            cardId
+          }
+        }`,
+      // Result hook
+      result() {
+        this.$store.dispatch('fetchBoard',[parseInt(this.boardId), this.userIdentity]);
+      },
+    },
   },
 }

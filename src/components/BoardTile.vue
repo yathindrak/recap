@@ -1,8 +1,4 @@
 <template>
-    <!--<router-link-->
-            <!--class="boardTile"-->
-            <!--:to="{ name: 'board' }">-->
-
     <vs-card class="tile">
         <div  v-on:click="this.goToBoard">
         <div slot="header">
@@ -20,7 +16,6 @@
         <EditBoardModal :board="{id: this.id, name: this.name, description: this.description}" />
         <DeleteModal type="board" :boardId="id" :userIdentity="userIdentity"></DeleteModal>
     </vs-card>
-    <!--</router-link>-->
 </template>
 
 <script>

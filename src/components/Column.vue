@@ -2,22 +2,11 @@
     <div>
     <vs-card class="column">
         <div slot="header">
-            <!--<vs-button vs-color="success" vs-type="flat" vs-icon="dehaze"></vs-button>&lt;!&ndash;column options&ndash;&gt;-->
 
             <vs-row>
-                <!--<vs-dropdown>-->
-                    <!--<vs-button vs-color="success" class="btn-drop" vs-type="flat" vs-icon="dehaze"></vs-button>-->
-                    <!--&lt;!&ndash;<vs-dropdown-menu class="font">&ndash;&gt;-->
-                        <!--&lt;!&ndash;<vs-dropdown-item @click="popupActivo=true">&ndash;&gt;-->
-                            <!--&lt;!&ndash;Edit&ndash;&gt;-->
-                        <!--&lt;!&ndash;</vs-dropdown-item>&ndash;&gt;-->
-                        <!--&lt;!&ndash;<vs-dropdown-item>&ndash;&gt;-->
-                            <!--&lt;!&ndash;delete&ndash;&gt;-->
-                        <!--&lt;!&ndash;</vs-dropdown-item>&ndash;&gt;-->
-                    <!--&lt;!&ndash;</vs-dropdown-menu>&ndash;&gt;-->
-                <!--</vs-dropdown>&lt;!&ndash;End of column drop down &ndash;&gt;-->
               <AddCardModal :columnId="columnId"></AddCardModal>
               <EditColumnModal :column="{id: columnId, name: name, description: description}" ></EditColumnModal>
+              <DeleteModal type="column" :boardId="boardId" :columnId="columnId" :userIdentity="userIdentity"></DeleteModal>
             </vs-row>
 
             <h3>
@@ -37,20 +26,23 @@
 <script>
 import AddCardModal from "./modals/AddCardModal";
 import EditColumnModal from './modals/EditColumnModal';
+import DeleteModal from './modals/DeleteModal';
 
 export default {
   name: "Column",
-  components: { AddCardModal,EditColumnModal },
+  components: { AddCardModal,EditColumnModal, DeleteModal },
   props: {
+    boardId: '',
     columnId: '',
     name: String,
     description: String
   },
   data() {
     return {
-      newcard: ""
+      newcard: "",
+      userIdentity: localStorage.getItem('useridentity'),
     };
-  }
+  },
 };
 </script>
 

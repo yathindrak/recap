@@ -6,15 +6,15 @@
 </template>
 
 <script>
-  import gql from "graphql-tag";
 
   export default {
     name: "DeleteModal",
     props: {
       type:'',
       boardId:'',
+      columnId:'',
       cardId:'',
-      userIdentity: String,
+      userIdentity:'',
     },
     data:()=>({
       colorAlert:'primary',
@@ -22,36 +22,6 @@
       activeAlert:false,
       valueInput:'',
     }),
-    apollo: {
-      // Subscriptions
-      $subscribe: {
-        boardDeleted: {
-          query: gql`subscription {
-          boardDeleted{
-            id
-          }
-        }`,
-          // Result hook
-          result() {
-            console.log('SOMEONE EDITED A BOARD');
-            this.$store.dispatch('fetchBoardList');
-          },
-        },
-
-        cardDeleted: {
-          query: gql`subscription {
-          cardDeleted{
-            id
-          }
-        }`,
-          // Result hook
-          result() {
-            console.log('SOMEONE EDITED A BOARD');
-            this.$store.dispatch('fetchBoard',[parseInt(this.boardId), this.userIdentity]);
-          },
-        },
-      },
-    },
     methods:{
       openAlert(color){
         this.colorAlert = color || this.getColorRandom();
@@ -68,6 +38,8 @@
           await this.$store.dispatch('deleteCard', [parseInt(this.cardId), parseInt(this.boardId)], user);
         } else if (this.type === 'board') {
           await this.$store.dispatch('deleteBoard', [parseInt(this.boardId)], user);
+        } else if (this.type === 'column') {
+          await this.$store.dispatch('deleteColumn', [parseInt(this.columnId), user, parseInt(this.boardId)]);
         }
 
         this.$vs.notify({
