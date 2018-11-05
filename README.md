@@ -42,7 +42,7 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 
 ## Maintainers
 
-[@yathindra123](https://github.com/yathindra123)
+[@yathindra123](https://www.linkedin.com/in/yathindra-kodithuwakku-651403133/)
 
 ## Contribute
 
