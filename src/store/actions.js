@@ -528,28 +528,28 @@ export default {
   },
 
   async addComment({ commit, dispatch }, data) {
-    const response = await apolloClient.mutate({
-      mutation: gql`
-        mutation ($message: String!, $cardId:Int!, $useridentity: String!, $boardId: Int!) {
-        addComment(message: $message, cardId: $cardId, useridentity: $useridentity, boardId: $boardId) {
-          ok
-          comment{
-            message
-          }
-          errors{
-            path
-            message
+      const response = await apolloClient.mutate({
+        mutation: gql`
+          mutation ($message: String!, $cardId:Int!, $useridentity: String!, $boardId: Int!) {
+          addComment(message: $message, cardId: $cardId, useridentity: $useridentity, boardId: $boardId) {
+            ok
+            comment{
+              message
+            }
+            errors{
+              path
+              message
+            }
           }
         }
-      }
-      `,
-      variables: {
-        message: data[0],
-        cardId: data[1],
-        useridentity: data[2],
-        boardId: data[3],
-      },
-      update: function(res_data) {
+        `,
+        variables: {
+          message: data[0],
+          cardId: data[1],
+          useridentity: data[2],
+          boardId: data[3],
+        },
+        update: function(res_data) {
         const useridentity = data[2];
         const board_id = data[3];
         dispatch('fetchBoard',[parseInt(board_id), useridentity]);
@@ -604,6 +604,12 @@ export default {
     let votes = response.data.getVoteCardsByBoard;
     return votes = arrangeCardVotes(votes);
   },
+
+
+  async reorderCol({ commit, dispatch }, data) {
+
+  },
+
 
 
 };

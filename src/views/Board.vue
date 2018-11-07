@@ -4,8 +4,12 @@
       <vs-col class="col" v-for="column in board.columns" :key="column.id" vs-type="flex" vs-justify="center"
               vs-align="center" vs-lg="3" vs-sm="6" vs-xs="12">
         <column :boardId="boardId" :columnId="column.id" :name="column.name" :description="column.description">
-          <card v-for="card in column.cards" :key="card.id" :isLiked="card.isLiked" :comments="card.comments"
-                :cardId="card.id" :name="card.name" :description="card.description" :likes_count="card.likes_count" />
+        <Container @drop="(dropResult) => onDrop(column, dropResult)" v-on:change="setCurrCol(column)">
+            <Draggable v-for="card in column.cards" :key="card.id">
+            <card :isLiked="card.isLiked" :comments="card.comments"
+                  :cardId="card.id" :name="card.name" :description="card.description" :likes_count="card.likes_count" />
+            </Draggable>
+        </Container>
         </column>
       </vs-col>
     </vs-row>
@@ -39,14 +43,33 @@ import Card from "../components/Card";
 import Column from "../components/Column";
 import { mapState } from 'vuex';
 import boardSub from '../gql-subscriptions/board';
+import { Container, Draggable } from "vue-smooth-dnd";
+import { applyDrag } from "../utils/dnd";
 
 export default {
-  components: { Column, Card },
+  components: { Column, Card, Container, Draggable },
   props: {
     title: ""
   },
   computed: {
     ...mapState(['board']),
+  },
+  data(){
+    return{
+      col: '',
+    }
+  },
+  methods: {
+    onDrop(column, result) {
+      const updatedColumn = applyDrag(column.cards, result);
+
+
+      console.log(JSON.parse(JSON.stringify(updatedColumn)));
+    },
+    setCurrCol(col) {
+      this.col = col;
+      console.log(col);
+    }
   },
   data() {
     return {
