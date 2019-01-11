@@ -12,6 +12,9 @@
 
 Open Source Kanban app for sprint retrospective -Anonymous(Without Login)
 
+Click below to get screenshots
+https://github.com/yathindra123/recap/wiki
+
 ## Build Setup
 
 ###Yarn
