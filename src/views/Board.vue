@@ -1,5 +1,23 @@
 <template>
-  <div class="board">
+  <div class="container">
+
+  <vs-row>
+    <vs-col vs-type="flex" vs-justify="left" vs-align="left" vs-w="12">
+      <div class="breadcrumb-container">
+        <nav data-v-188e5bc8="" aria-label="breadcrumb" class="vs-breadcrumb vs-align-left"><ol><li class=""><a href="/" title="Boards">
+        Boards
+        </a>
+        <span translate="translate" aria-hidden="true" class="separator notranslate">/</span></li><li aria-current="page" class="vs-active"><span class="vs-breadcrumb-text vs-breadcrumb-text-primary">
+          {{board.name}}
+        </span><!----></li></ol>
+        </nav>
+
+
+      </div>
+    </vs-col>
+  </vs-row>
+
+    <div class="board">
     <vs-row class="row" v-if="board.columns !== undefined">
       <vs-col class="col" v-for="column in board.columns" :key="column.id" vs-type="flex" vs-justify="center"
               vs-align="center" vs-lg="3" vs-sm="6" vs-xs="12">
@@ -14,6 +32,7 @@
       </vs-col>
     </vs-row>
 
+  </div>
   </div>
 </template>
 <style lang="scss" scoped>
@@ -37,6 +56,15 @@
     }
   }
 }
+
+.vs-breadcrumb ol li {
+  list-style: none;
+  }
+
+.breadcrumb-container{
+  margin-left: 10px;
+}
+
 </style>
 <script>
 import Card from "../components/Card";
