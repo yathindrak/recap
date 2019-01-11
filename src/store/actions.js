@@ -33,6 +33,7 @@ export default {
       query: gql`
         query getBoard($id: Int!) {
           getBoard(id: $id){
+            id,
             name
             description
             columns{

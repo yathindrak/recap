@@ -63,16 +63,27 @@ export default {
     onDrop(column, result) {
       const updatedColumn = applyDrag(column.cards, result);
 
-
       console.log(JSON.parse(JSON.stringify(updatedColumn)));
     },
     setCurrCol(col) {
       this.col = col;
       console.log(col);
+    },
+    openLoading(){
+      this.$vs.loading();
+      const tempInterval = setInterval( ()=> {
+        if(parseInt(this.board.id) === parseInt(this.boardId)) {
+          this.$vs.loading.close();
+          clearInterval(tempInterval);
+        } else {
+          this.$vs.loading();
+        }
+      }, 100);
     }
   },
   data() {
     return {
+      loaded: false,
       boardId: this.$route.query.board_id,
       getBoard: '',
       loading: 0,
@@ -81,12 +92,12 @@ export default {
     };
   },
   async mounted() {
+    this.openLoading();
     this.boardId = await this.$route.query.board_id;
     this.userIdentity = await localStorage.getItem('useridentity');
 
     await this.$store.dispatch('fetchBoard', [parseInt(this.boardId), this.userIdentity]);
     await this.$store.dispatch('getCommentsByBoard', [this.userIdentity, parseInt(this.boardId)]);
-
   },
   apollo: boardSub
 };
