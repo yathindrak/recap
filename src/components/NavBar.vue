@@ -7,7 +7,7 @@
             </vs-button>
 
             <vs-navbar-title>
-                <em>MathXL</em> Recap
+                <em>{{ team_name }}</em> {{app_name}}
             </vs-navbar-title>
             <AddBoardModal
                     id="add-board-btn"
@@ -34,7 +34,9 @@ export default {
   data: () => ({
     activeItem: 0,
     userIdentity: localStorage.getItem('useridentity'),
-    type: "gradient"
+    type: "gradient",
+    app_name: process.env.APP_NAME,
+    team_name: process.env.TEAM_NAME
   }),
   methods: {
     gotoBoards() {
