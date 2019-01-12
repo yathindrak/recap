@@ -106,7 +106,7 @@ export default {
         } else {
           this.$vs.loading();
         }
-      }, 100);
+      }, 10);
     }
   },
   data() {
